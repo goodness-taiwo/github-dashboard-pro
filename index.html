@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Analyze any GitHub profile with advanced analytics and visualizations">
+    <title>GitHub Dashboard Pro | Advanced GitHub Analytics</title>
+    
+    <!-- Professional Typography - Manrope + Space Grotesk -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    
+    <!-- Material Symbols (Icons) -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700" rel="stylesheet">
+    
+    <!-- Our CSS -->
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+
+    <!-- Top Navigation Bar -->
+    <header class="top-nav">
+        <div class="nav-container">
+            <div class="nav-left">
+                <span class="logo">GitHub Dashboard Pro</span>
+                <nav class="nav-links">
+                    <a href="#" class="nav-link active">Dashboard</a>
+                    <a href="#" class="nav-link">Repositories</a>
+                    <a href="#" class="nav-link">Insights</a>
+                    <a href="#" class="nav-link">Activity</a>
+                </nav>
+            </div>
+            <div class="nav-right">
+                <button class="icon-btn" aria-label="Notifications">
+                    <span class="material-symbols-outlined">notifications</span>
+                </button>
+                <button class="icon-btn" aria-label="Settings">
+                    <span class="material-symbols-outlined">settings</span>
+                </button>
+                <div class="avatar"></div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <span class="hero-label">ADVANCED ANALYTICS</span>
+            <h1 class="hero-title">Visualize the velocity of your repository.</h1>
+            
+            <!-- Search Form -->
+            <form class="search-form" id="searchForm">
+                <div class="search-wrapper">
+                    <span class="material-symbols-outlined search-icon">search</span>
+                    <input 
+                        type="text" 
+                        id="usernameInput"
+                        class="search-input"
+                        placeholder="Enter GitHub Username"
+                        autocomplete="off"
+                        spellcheck="false"
+                        required
+                    >
+                    <button type="submit" class="search-btn">
+                        ANALYZE
+                        <span class="material-symbols-outlined">arrow_forward</span>
+                    </button>
+                </div>
+            </form>
+
+            <p class="hero-subtitle">
+                Real-time contribution heatmaps, branch velocity metrics, and developer impact scoring.
+            </p>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="workflow-section">
+        <div class="section-container">
+            <div class="section-header">
+                <span class="section-label">WORKFLOW</span>
+                <h2 class="section-title">How it works.</h2>
+            </div>
+
+            <div class="workflow-grid">
+                
+                <!-- Step 1: Search -->
+                <div class="workflow-card">
+                    <div class="card-number">01</div>
+                    <div class="card-icon">
+                        <span class="material-symbols-outlined">search</span>
+                    </div>
+                    <div class="card-content">
+                        <h3>Search</h3>
+                        <p>Connect any public repository or enter a username to begin the indexing process. Our engine crawls commit history in seconds.</p>
+                    </div>
+                    <div class="card-tags">
+                        <span class="tag">FETCHING_API</span>
+                        <span class="tag">REST_V3</span>
+                    </div>
+                </div>
+
+                <!-- Step 2: Analyze -->
+                <div class="workflow-card card-wide">
+                    <div class="card-content-split">
+                        <div class="card-left">
+                            <div class="card-icon accent-teal">
+                                <span class="material-symbols-outlined">analytics</span>
+                            </div>
+                            <div class="card-content">
+                                <h3>Analyze</h3>
+                                <p>Our proprietary algorithms quantify developer contribution beyond just lines of code. We measure logic complexity, review impact, and churn rates.</p>
+                            </div>
+                            <ul class="feature-list">
+                                <li class="active">
+                                    <span class="dot"></span>
+                                    Cognitive Complexity Scoring
+                                </li>
+                                <li>
+                                    <span class="dot"></span>
+                                    Velocity Prediction Models
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="card-right">
+                            <div class="data-viz">
+                                <div class="viz-header">
+                                    <span class="viz-label">DATA_STREAM</span>
+                                    <span class="viz-status">LIVE</span>
+                                </div>
+                                <div class="chart">
+                                    <div class="bar" style="height: 30%"></div>
+                                    <div class="bar" style="height: 60%"></div>
+                                    <div class="bar" style="height: 45%"></div>
+                                    <div class="bar" style="height: 90%"></div>
+                                    <div class="bar active" style="height: 70%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3: Visualize -->
+                <div class="workflow-card card-full">
+                    <div class="card-content-split horizontal">
+                        <div class="card-left">
+                            <div class="card-icon accent-purple">
+                                <span class="material-symbols-outlined">auto_graph</span>
+                            </div>
+                            <h3>Visualize</h3>
+                            <p>Experience your project like never before with 3D contribution clouds and interactive temporal graphs. Turn raw logs into actionable narratives for your team.</p>
+                            <button class="explore-btn">
+                                EXPLORE VISUALIZATIONS
+                                <span class="material-symbols-outlined">open_in_new</span>
+                            </button>
+                        </div>
+                        <div class="card-right">
+                            <div class="viz-placeholder">
+                                <div class="viz-overlay"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-section">
+        <div class="stats-container">
+            <div class="stat">
+                <span class="stat-label">REPOS INDEXED</span>
+                <span class="stat-value primary">1.2M+</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">ACTIVE USERS</span>
+                <span class="stat-value teal">85k</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">COMMITS ANALYZED</span>
+                <span class="stat-value purple">400M</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">ACCURACY RATE</span>
+                <span class="stat-value">99.9%</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Results Container (Hidden initially) -->
+    <section class="results-container" id="resultsContainer">
+        <!-- Results will be injected here via JavaScript -->
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-left">
+                <span class="footer-logo">GitHub Dashboard Pro</span>
+                <p class="footer-text">© 2024 GitHub Dashboard Pro. Built for high-velocity teams.</p>
+            </div>
+            <nav class="footer-links">
+                <a href="#">API</a>
+                <a href="#">Documentation</a>
+                <a href="#">Changelog</a>
+                <a href="#">Status</a>
+                <a href="#">Privacy</a>
+            </nav>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="js/app.js"></script>
+</body>
+</html>
