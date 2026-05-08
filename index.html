@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Advanced GitHub profile analytics and insights">
+    <title>GitHub Dashboard Pro</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700" rel="stylesheet">
+    
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+
+    <!-- Navigation -->
+<nav class="navbar">
+    <div class="nav-content">
+        <div class="nav-left">
+            <div class="logo">
+                <div class="logo-icon">
+                    <span class="material-symbols-outlined">insights</span>
+                </div>
+                <span class="logo-text">GitHub Dashboard Pro</span>
+            </div>
+            <div class="nav-links">
+                <a href="#dashboard" class="nav-link active">
+                    <span class="material-symbols-outlined">dashboard</span>
+                    <span class="link-text">Dashboard</span>
+                </a>
+                <a href="#repositories" class="nav-link">
+                    <span class="material-symbols-outlined">folder</span>
+                    <span class="link-text">Repositories</span>
+                </a>
+                <a href="#insights" class="nav-link">
+                    <span class="material-symbols-outlined">insights</span>
+                    <span class="link-text">Insights</span>
+                </a>
+                <a href="#activity" class="nav-link">
+                    <span class="material-symbols-outlined">timeline</span>
+                    <span class="link-text">Activity</span>
+                </a>
+            </div>
+        </div>
+        
+        <div class="nav-right">
+            <button class="icon-button">
+                <span class="material-symbols-outlined">notifications</span>
+            </button>
+            <button class="icon-button">
+                <span class="material-symbols-outlined">settings</span>
+            </button>
+            <div class="user-avatar">
+                <span class="material-symbols-outlined">account_circle</span>
+            </div>
+        </div>
+    </div>
+</nav>
+
+    <!-- Hero Section with Background -->
+    <section class="hero">
+        <!-- Background Pattern -->
+        <div class="hero-background">
+            <div class="bg-grid"></div>
+            <div class="bg-gradient"></div>
+            <svg class="bg-visual" viewBox="0 0 1200 600" xmlns="http://www.w3.org/2000/svg">
+                <!-- Network visualization -->
+                <g opacity="0.2">
+                    <!-- Nodes -->
+                    <circle cx="200" cy="150" r="6" fill="#58a6ff"/>
+                    <circle cx="400" cy="100" r="8" fill="#39d0d8"/>
+                    <circle cx="600" cy="180" r="7" fill="#bc8cff"/>
+                    <circle cx="800" cy="120" r="6" fill="#ff9b6b"/>
+                    <circle cx="1000" cy="200" r="9" fill="#56d364"/>
+                    <circle cx="300" cy="300" r="7" fill="#58a6ff"/>
+                    <circle cx="500" cy="350" r="6" fill="#39d0d8"/>
+                    <circle cx="700" cy="280" r="8" fill="#bc8cff"/>
+                    <circle cx="900" cy="380" r="7" fill="#ff9b6b"/>
+                    
+                    <!-- Connecting lines -->
+                    <line x1="200" y1="150" x2="400" y2="100" stroke="#58a6ff" stroke-width="1.5"/>
+                    <line x1="400" y1="100" x2="600" y2="180" stroke="#39d0d8" stroke-width="1.5"/>
+                    <line x1="600" y1="180" x2="800" y2="120" stroke="#bc8cff" stroke-width="1.5"/>
+                    <line x1="800" y1="120" x2="1000" y2="200" stroke="#ff9b6b" stroke-width="1.5"/>
+                    <line x1="200" y1="150" x2="300" y2="300" stroke="#58a6ff" stroke-width="1.5"/>
+                    <line x1="400" y1="100" x2="500" y2="350" stroke="#39d0d8" stroke-width="1.5"/>
+                    <line x1="600" y1="180" x2="700" y2="280" stroke="#bc8cff" stroke-width="1.5"/>
+                    <line x1="800" y1="120" x2="900" y2="380" stroke="#ff9b6b" stroke-width="1.5"/>
+                    <line x1="300" y1="300" x2="500" y2="350" stroke="#56d364" stroke-width="1.5"/>
+                    <line x1="500" y1="350" x2="700" y2="280" stroke="#39d0d8" stroke-width="1.5"/>
+                    <line x1="700" y1="280" x2="900" y2="380" stroke="#bc8cff" stroke-width="1.5"/>
+                </g>
+                
+                <!-- Code blocks floating -->
+                <g opacity="0.15">
+                    <rect x="100" y="400" width="120" height="80" rx="8" fill="#58a6ff"/>
+                    <rect x="950" y="50" width="140" height="90" rx="8" fill="#39d0d8"/>
+                    <rect x="50" y="80" width="100" height="70" rx="8" fill="#bc8cff"/>
+                </g>
+                
+                <!-- Data points -->
+                <g opacity="0.3">
+                    <circle cx="150" cy="250" r="3" fill="#58a6ff">
+                        <animate attributeName="opacity" values="0.3;1;0.3" dur="3s" repeatCount="indefinite"/>
+                    </circle>
+                    <circle cx="450" cy="200" r="3" fill="#39d0d8">
+                        <animate attributeName="opacity" values="0.3;1;0.3" dur="4s" repeatCount="indefinite"/>
+                    </circle>
+                    <circle cx="750" cy="350" r="3" fill="#bc8cff">
+                        <animate attributeName="opacity" values="0.3;1;0.3" dur="3.5s" repeatCount="indefinite"/>
+                    </circle>
+                    <circle cx="950" cy="280" r="3" fill="#ff9b6b">
+                        <animate attributeName="opacity" values="0.3;1;0.3" dur="4.5s" repeatCount="indefinite"/>
+                    </circle>
+                </g>
+            </svg>
+        </div>
+
+        <div class="hero-container">
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <span class="badge-dot"></span>
+                    <span>Real-time GitHub Analytics</span>
+                </div>
+                
+                <h1 class="hero-title">
+                    Understand Your GitHub Profile
+                    <span class="title-highlight">Like Never Before</span>
+                </h1>
+                
+                <p class="hero-description">
+                    Analyze contribution patterns, track repository health, and visualize your coding journey with powerful insights.
+                </p>
+                
+                <!-- Search Bar -->
+                <div class="search-section">
+                    <div class="search-bar">
+                        <span class="material-symbols-outlined search-icon">search</span>
+                        <input 
+                            type="text" 
+                            id="usernameInput"
+                            placeholder="Enter GitHub username..."
+                            class="search-input"
+                        >
+                        <button class="search-btn">
+                            <span>Analyze</span>
+                            <span class="material-symbols-outlined">arrow_forward</span>
+                        </button>
+                    </div>
+                    <div class="search-examples">
+                        <span>Try:</span>
+                        <button class="example-chip">torvalds</button>
+                        <button class="example-chip">gaearon</button>
+                        <button class="example-chip">tj</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- What You Get Section -->
+    <section class="features-section">
+        <div class="container">
+            <div class="section-head">
+                <span class="section-badge">What You Get</span>
+                <h2 class="section-title">Comprehensive GitHub Analytics</h2>
+            </div>
+
+            <div class="features-grid">
+                <!-- Feature 1 -->
+                <div class="feature-box">
+                    <div class="feature-icon blue">
+                        <span class="material-symbols-outlined">bar_chart</span>
+                    </div>
+                    <h3>Contribution Analysis</h3>
+                    <p>Track your commit history, contribution streaks, and peak productivity hours with visual heatmaps.</p>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="feature-box">
+                    <div class="feature-icon cyan">
+                        <span class="material-symbols-outlined">code</span>
+                    </div>
+                    <h3>Language Breakdown</h3>
+                    <p>See your most-used programming languages with pie charts and percentage breakdowns.</p>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="feature-box">
+                    <div class="feature-icon purple">
+                        <span class="material-symbols-outlined">folder_open</span>
+                    </div>
+                    <h3>Repository Insights</h3>
+                    <p>Analyze repository health, star growth, fork activity, and collaboration patterns across all your projects.</p>
+                </div>
+
+                <!-- Feature 4 -->
+                <div class="feature-box">
+                    <div class="feature-icon orange">
+                        <span class="material-symbols-outlined">speed</span>
+                    </div>
+                    <h3>Productivity Metrics</h3>
+                    <p>Measure development velocity, issue resolution time, and pull request merge rates in real-time.</p>
+                </div>
+
+                <!-- Feature 5 -->
+                <div class="feature-box">
+                    <div class="feature-icon green">
+                        <span class="material-symbols-outlined">compare</span>
+                    </div>
+                    <h3>Profile Comparison</h3>
+                    <p>Compare two GitHub profiles side-by-side to see who's more active, productive, or influential.</p>
+                </div>
+
+                <!-- Feature 6 -->
+                <div class="feature-box">
+                    <div class="feature-icon pink">
+                        <span class="material-symbols-outlined">psychology</span>
+                    </div>
+                    <h3>Smart Insights</h3>
+                    <p>Get AI-powered recommendations on areas to improve and patterns to optimize your workflow.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="how-it-works">
+        <div class="container">
+            <div class="section-head centered">
+                <span class="section-badge">Simple Process</span>
+                <h2 class="section-title">Three Steps to Insights</h2>
+            </div>
+
+            <div class="steps-container">
+                <div class="step-card">
+                    <div class="step-num">01</div>
+                    <div class="step-icon">
+                        <span class="material-symbols-outlined">person_search</span>
+                    </div>
+                    <h3>Enter Username</h3>
+                    <p>Type any public GitHub username into the search bar above.</p>
+                </div>
+
+                <div class="step-arrow">
+                    <span class="material-symbols-outlined">arrow_forward</span>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-num">02</div>
+                    <div class="step-icon">
+                        <span class="material-symbols-outlined">query_stats</span>
+                    </div>
+                    <h3>Analyze</h3>
+                    <p>Our engine fetches and processes all public GitHub data instantly.</p>
+                </div>
+
+                <div class="step-arrow">
+                    <span class="material-symbols-outlined">arrow_forward</span>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-num">03</div>
+                    <div class="step-icon">
+                        <span class="material-symbols-outlined">monitoring</span>
+                    </div>
+                    <h3>Visualize</h3>
+                    <p>View  charts, graphs, and insights about the profile.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-bar">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-number">2.8M+</div>
+                    <div class="stat-label">Profiles Analyzed</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">180K</div>
+                    <div class="stat-label">Active Users</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">650M+</div>
+                    <div class="stat-label">Commits Tracked</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">99.9%</div>
+                    <div class="stat-label">Uptime</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <div class="footer-logo">
+                        <span class="logo-text">GitHub Dashboard Pro</span>
+                    </div>
+                    <p class="footer-desc">
+                        Advanced GitHub analytics for developers who want to understand their coding journey.
+                    </p>
+                </div>
+
+                <div class="footer-links">
+                    <div class="footer-col">
+                        <h4>Product</h4>
+                        <a href="#">Features</a>
+                        <a href="#">API</a>
+                        <a href="#">Documentation</a>
+                    </div>
+                    <div class="footer-col">
+                        <h4>Resources</h4>
+                        <a href="#">Blog</a>
+                        <a href="#">Changelog</a>
+                        <a href="#">Support</a>
+                    </div>
+                    <div class="footer-col">
+                        <h4>Legal</h4>
+                        <a href="#">Privacy</a>
+                        <a href="#">Terms</a>
+                        <a href="#">License</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>© 2026 GitHub Dashboard Pro. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Results Container (Hidden) -->
+    <div id="resultsContainer" style="display: none;"></div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
