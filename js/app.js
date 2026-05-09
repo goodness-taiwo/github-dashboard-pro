@@ -4,6 +4,35 @@
 
 console.log('Script loaded');
 
+// GitHub Language Colors
+const LANGUAGE_COLORS = {
+    'JavaScript': '#f1e05a',
+    'TypeScript': '#3178c6',
+    'Python': '#3572A5',
+    'Java': '#b07219',
+    'C': '#555555',
+    'C++': '#f34b7d',
+    'C#': '#178600',
+    'Ruby': '#701516',
+    'Go': '#00ADD8',
+    'Rust': '#dea584',
+    'PHP': '#4F5D95',
+    'Swift': '#F05138',
+    'Kotlin': '#A97BFF',
+    'Dart': '#00B4AB',
+    'HTML': '#e34c26',
+    'CSS': '#563d7c',
+    'Shell': '#89e051',
+    'Vue': '#41b883',
+    'R': '#198CE7',
+    'Scala': '#c22d40',
+    'Objective-C': '#438eff',
+    'Perl': '#0298c3',
+    'Lua': '#000080',
+    'Assembly': '#6E4C13',
+    'Default': '#8b949e'
+};
+
 window.addEventListener('load', function() {
     console.log('Page loaded');
     
@@ -126,6 +155,142 @@ window.addEventListener('load', function() {
         // Scroll to top
         window.scrollTo(0, 0);
     };
+
+
+
+
+    // ============================================
+// CALCULATE LANGUAGE STATISTICS
+// ============================================
+
+function calculateLanguages(repos) {
+    console.log('Calculating language statistics');
+    
+    const languageCounts = {};
+    let totalRepos = 0;
+    
+    // Count each language
+    repos.forEach(function(repo) {
+        if (repo.language) {
+            totalRepos++;
+            if (languageCounts[repo.language]) {
+                languageCounts[repo.language]++;
+            } else {
+                languageCounts[repo.language] = 1;
+            }
+        }
+    });
+    
+    // Convert to array with percentages
+    const languagesArray = [];
+    for (const language in languageCounts) {
+        const count = languageCounts[language];
+        const percentage = ((count / totalRepos) * 100).toFixed(1);
+        languagesArray.push({
+            name: language,
+            count: count,
+            percentage: parseFloat(percentage),
+            color: LANGUAGE_COLORS[language] || LANGUAGE_COLORS['Default']
+        });
+    }
+    
+    // Sort by count (most used first)
+    languagesArray.sort(function(a, b) {
+        return b.count - a.count;
+    });
+    
+    // Take top 6, group rest as "Other"
+    if (languagesArray.length > 6) {
+        const top6 = languagesArray.slice(0, 6);
+        const others = languagesArray.slice(6);
+        
+        const otherCount = others.reduce(function(sum, lang) {
+            return sum + lang.count;
+        }, 0);
+        
+        const otherPercentage = ((otherCount / totalRepos) * 100).toFixed(1);
+        
+        if (otherCount > 0) {
+            top6.push({
+                name: 'Other',
+                count: otherCount,
+                percentage: parseFloat(otherPercentage),
+                color: LANGUAGE_COLORS['Default']
+            });
+        }
+        
+        return top6;
+    }
+    
+    return languagesArray;
+}
+
+
+
+// ============================================
+// CREATE LANGUAGE CHART
+// ============================================
+
+function createLanguageChart(languages) {
+    console.log('Creating language chart');
+    
+    const canvas = document.getElementById('languageChart');
+    
+    if (!canvas) {
+        console.error('Canvas not found');
+        return;
+    }
+    
+    const labels = languages.map(function(lang) {
+        return lang.name;
+    });
+    
+    const data = languages.map(function(lang) {
+        return lang.percentage;
+    });
+    
+    const colors = languages.map(function(lang) {
+        return lang.color;
+    });
+    
+    new Chart(canvas, {
+        type: 'doughnut',
+        data: {
+            labels: labels,
+            datasets: [{
+                data: data,
+                backgroundColor: colors,
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    backgroundColor: '#161b22',
+                    titleColor: '#f0f6fc',
+                    bodyColor: '#8b949e',
+                    borderColor: '#30363d',
+                    borderWidth: 1,
+                    padding: 12,
+                    displayColors: true,
+                    callbacks: {
+                        label: function(context) {
+                            return context.label + ': ' + context.parsed + '%';
+                        }
+                    }
+                }
+            }
+        }
+    });
+    
+    console.log('Chart created successfully');
+}
+
     
     // ============================================
     // DISPLAY RESULTS
@@ -142,6 +307,9 @@ window.addEventListener('load', function() {
             return sum + repo.forks_count;
         }, 0);
         
+        // Calculate language statistics
+        const languages = calculateLanguages(repos);
+        
         resultsContainer.innerHTML = `
             <div class="results-page">
                 <div class="results-content">
@@ -150,7 +318,7 @@ window.addEventListener('load', function() {
                         <span class="material-symbols-outlined">arrow_back</span>
                         <span>Back to Home</span>
                     </button>
-
+    
                     <!-- Profile Section -->
                     <div class="profile-section">
                         <div class="profile-header">
@@ -167,7 +335,7 @@ window.addEventListener('load', function() {
                                 </div>
                             </div>
                         </div>
-
+    
                         <!-- Stats Grid -->
                         <div class="stats-grid">
                             <div class="stat-card">
@@ -192,7 +360,33 @@ window.addEventListener('load', function() {
                             </div>
                         </div>
                     </div>
-
+    
+                    <!-- Language Breakdown Section -->
+                    <div class="language-section">
+                        <h2 class="section-title">
+                            <span class="material-symbols-outlined">code</span>
+                            Language Breakdown
+                        </h2>
+                        <div class="language-content">
+                            <div class="chart-container">
+                                <canvas id="languageChart"></canvas>
+                            </div>
+                            <div class="language-list">
+                                ${languages.map(function(lang) {
+                                    return `
+                                        <div class="language-item">
+                                            <div class="language-color" style="background-color: ${lang.color};"></div>
+                                            <div class="language-details">
+                                                <div class="language-name">${lang.name}</div>
+                                                <div class="language-stats">${lang.count} ${lang.count === 1 ? 'repo' : 'repos'} • ${lang.percentage}%</div>
+                                            </div>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>
+                    </div>
+    
                     <!-- Repositories Section -->
                     <div class="repositories-section">
                         <h2 class="section-title">
@@ -207,7 +401,7 @@ window.addEventListener('load', function() {
                                             <h3 class="repo-name">
                                                 <a href="${repo.html_url}" target="_blank">${repo.name}</a>
                                             </h3>
-                                            ${repo.language ? `<span class="repo-language">${repo.language}</span>` : ''}
+                                            ${repo.language ? `<span class="repo-language" style="background-color: ${LANGUAGE_COLORS[repo.language] || LANGUAGE_COLORS['Default']}15; color: ${LANGUAGE_COLORS[repo.language] || LANGUAGE_COLORS['Default']};">${repo.language}</span>` : ''}
                                         </div>
                                         <p class="repo-description">${repo.description || 'No description provided'}</p>
                                         <div class="repo-stats">
@@ -232,6 +426,11 @@ window.addEventListener('load', function() {
                 </div>
             </div>
         `;
+        
+        // Create the chart after HTML is rendered
+        setTimeout(function() {
+            createLanguageChart(languages);
+        }, 100);
         
         console.log('Results displayed');
     }
