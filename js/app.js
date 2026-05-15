@@ -912,4 +912,5 @@ window.addEventListener('load', function() {
     }
     
     console.log('Ready');
+    console.log('App.js loaded');
 });
