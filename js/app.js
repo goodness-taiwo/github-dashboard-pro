@@ -1,5 +1,5 @@
 // ============================================
-// GITHUB DASHBOARD PRO - USING EXISTING NAV
+// GITHUB DASHBOARD PRO - COMPLETE WITH HEATMAP
 // ============================================
 
 console.log('Script loaded');
@@ -50,10 +50,7 @@ window.addEventListener('load', function() {
     const resultsContainer = document.getElementById('resultsContainer');
     const exampleChips = document.querySelectorAll('.example-chip');
     
-    // Get all landing page content
     const landingPageContent = document.querySelectorAll('.hero, .features-section, .how-it-works, .stats-bar, .footer');
-    
-    // Get navbar links
     const navLinks = document.querySelectorAll('.nav-link');
     
     console.log('All elements found');
@@ -101,10 +98,8 @@ window.addEventListener('load', function() {
     function searchUser(username) {
         console.log('Searching for:', username);
         
-        // Navigate to results page
         showResultsPage();
         
-        // Show loading
         resultsContainer.innerHTML = `
             <div class="loading-container">
                 <div class="loading-spinner"></div>
@@ -112,7 +107,6 @@ window.addEventListener('load', function() {
             </div>
         `;
         
-        // Fetch user data
         fetch(`https://api.github.com/users/${username}`)
             .then(function(response) {
                 if (!response.ok) {
@@ -127,7 +121,6 @@ window.addEventListener('load', function() {
                 console.log('User data received');
                 currentUser = userData;
                 
-                // Fetch ALL repositories
                 return fetch(`https://api.github.com/users/${username}/repos?per_page=100&sort=updated`)
                     .then(function(response) {
                         return response.json();
@@ -211,7 +204,6 @@ window.addEventListener('load', function() {
         usernameInput.value = '';
         window.scrollTo(0, 0);
         
-        // Reset state
         currentUser = null;
         currentRepos = [];
         allRepos = [];
@@ -627,12 +619,37 @@ window.addEventListener('load', function() {
                             <canvas id="languageBarChart"></canvas>
                         </div>
                     </div>
+                    
+                    <div class="insight-section">
+                        <h2 class="section-title">
+                            <span class="material-symbols-outlined">calendar_month</span>
+                            Contribution Activity
+                            <span class="loading-text" id="heatmapLoading">Loading...</span>
+                        </h2>
+                        <div id="contributionHeatmap" class="heatmap-wrapper">
+                            <div class="loading-spinner-small"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         `;
         
         setTimeout(function() {
             createLanguageBarChart(languages);
+            
+            fetchContributionData(currentUser.login).then(function(contributionsMap) {
+                const loadingText = document.getElementById('heatmapLoading');
+                if (loadingText) {
+                    loadingText.remove();
+                }
+                createContributionHeatmap(contributionsMap);
+            }).catch(function(error) {
+                console.error('Error creating heatmap:', error);
+                const heatmapContainer = document.getElementById('contributionHeatmap');
+                if (heatmapContainer) {
+                    heatmapContainer.innerHTML = '<p style="text-align: center; color: var(--text-muted); padding: 2rem;">Unable to load contribution data</p>';
+                }
+            });
         }, 100);
         
         console.log('Insights page displayed');
@@ -731,6 +748,208 @@ window.addEventListener('load', function() {
         });
         
         console.log('Bar chart created successfully');
+    }
+    
+    // ============================================
+    // FETCH CONTRIBUTION DATA
+    // ============================================
+    
+    async function fetchContributionData(username) {
+        console.log('Fetching contribution data...');
+        
+        const contributionsMap = {};
+        const oneYearAgo = new Date();
+        oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+        
+        // Initialize all dates in the past year with 0 commits
+        for (let d = new Date(oneYearAgo); d <= new Date(); d.setDate(d.getDate() + 1)) {
+            const dateKey = d.toISOString().split('T')[0];
+            contributionsMap[dateKey] = 0;
+        }
+        
+        // Fetch commits from repos (limit 30 for speed)
+        const commitPromises = allRepos.slice(0, 30).map(async function(repo) {
+            try {
+                const response = await fetch(
+                    `https://api.github.com/repos/${username}/${repo.name}/commits?author=${username}&since=${oneYearAgo.toISOString()}&per_page=100`
+                );
+                
+                if (!response.ok) return [];
+                
+                const commits = await response.json();
+                return commits;
+            } catch (error) {
+                console.error(`Error fetching commits for ${repo.name}:`, error);
+                return [];
+            }
+        });
+        
+        const allCommitsArrays = await Promise.all(commitPromises);
+        const allCommits = allCommitsArrays.flat();
+        
+        // Count commits per day
+        allCommits.forEach(function(commit) {
+            if (commit.commit && commit.commit.author) {
+                const date = commit.commit.author.date.split('T')[0];
+                if (contributionsMap[date] !== undefined) {
+                    contributionsMap[date]++;
+                }
+            }
+        });
+        
+        console.log('Contribution data fetched:', Object.keys(contributionsMap).length, 'days');
+        return contributionsMap;
+    }
+    
+    // ============================================
+    // CREATE CONTRIBUTION HEATMAP
+    // ============================================
+    
+    function createContributionHeatmap(contributionsMap) {
+        console.log('Creating contribution heatmap');
+        
+        const heatmapContainer = document.getElementById('contributionHeatmap');
+        if (!heatmapContainer) {
+            console.error('Heatmap container not found');
+            return;
+        }
+        
+        const today = new Date();
+        const oneYearAgo = new Date();
+        oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+        
+        // Find the most recent Sunday
+        const mostRecentSunday = new Date(today);
+        mostRecentSunday.setDate(today.getDate() - today.getDay());
+        
+        // Build calendar grid (52 weeks)
+        const weeks = [];
+        let currentDate = new Date(mostRecentSunday);
+        currentDate.setDate(currentDate.getDate() - (51 * 7));
+        
+        for (let week = 0; week < 52; week++) {
+            const weekData = [];
+            for (let day = 0; day < 7; day++) {
+                const dateKey = currentDate.toISOString().split('T')[0];
+                const count = contributionsMap[dateKey] || 0;
+                
+                weekData.push({
+                    date: new Date(currentDate),
+                    dateKey: dateKey,
+                    count: count,
+                    level: getContributionLevel(count)
+                });
+                
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+            weeks.push(weekData);
+        }
+        
+        // Generate HTML
+        let html = '<div class="heatmap-grid">';
+        
+        // Month labels
+        html += '<div class="heatmap-months">';
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        let lastMonth = -1;
+        weeks.forEach(function(week, weekIndex) {
+            const month = week[0].date.getMonth();
+            if (month !== lastMonth && week[0].date.getDate() <= 7) {
+                html += `<span class="month-label" style="left: ${weekIndex * 15}px;">${months[month]}</span>`;
+                lastMonth = month;
+            }
+        });
+        html += '</div>';
+        
+        // Day labels
+        html += '<div class="heatmap-days">';
+        html += '<span class="day-label">Mon</span>';
+        html += '<span class="day-label"></span>';
+        html += '<span class="day-label">Wed</span>';
+        html += '<span class="day-label"></span>';
+        html += '<span class="day-label">Fri</span>';
+        html += '<span class="day-label"></span>';
+        html += '<span class="day-label"></span>';
+        html += '</div>';
+        
+        // Weeks and days
+        html += '<div class="heatmap-weeks">';
+        weeks.forEach(function(week) {
+            html += '<div class="heatmap-week">';
+            week.forEach(function(day) {
+                const dateStr = day.date.toLocaleDateString('en-US', { 
+                    weekday: 'short', 
+                    month: 'short', 
+                    day: 'numeric', 
+                    year: 'numeric' 
+                });
+                html += `
+                    <div class="heatmap-day level-${day.level}" 
+                         data-date="${dateStr}" 
+                         data-count="${day.count}"
+                         title="${day.count} contributions on ${dateStr}">
+                    </div>
+                `;
+            });
+            html += '</div>';
+        });
+        html += '</div>';
+        
+        html += '</div>';
+        
+        // Legend
+        html += `
+            <div class="heatmap-legend">
+                <span class="legend-label">Less</span>
+                <div class="legend-squares">
+                    <div class="legend-square level-0"></div>
+                    <div class="legend-square level-1"></div>
+                    <div class="legend-square level-2"></div>
+                    <div class="legend-square level-3"></div>
+                    <div class="legend-square level-4"></div>
+                </div>
+                <span class="legend-label">More</span>
+            </div>
+        `;
+        
+        heatmapContainer.innerHTML = html;
+        
+        // Add tooltips
+        const days = heatmapContainer.querySelectorAll('.heatmap-day');
+        days.forEach(function(dayEl) {
+            dayEl.addEventListener('mouseenter', function() {
+                const tooltip = document.createElement('div');
+                tooltip.className = 'heatmap-tooltip';
+                tooltip.textContent = `${dayEl.getAttribute('data-count')} contributions on ${dayEl.getAttribute('data-date')}`;
+                tooltip.style.position = 'fixed';
+                tooltip.style.display = 'none';
+                document.body.appendChild(tooltip);
+                
+                const rect = dayEl.getBoundingClientRect();
+                tooltip.style.left = rect.left + rect.width / 2 - tooltip.offsetWidth / 2 + 'px';
+                tooltip.style.top = rect.top - tooltip.offsetHeight - 8 + 'px';
+                tooltip.style.display = 'block';
+                
+                dayEl._tooltip = tooltip;
+            });
+            
+            dayEl.addEventListener('mouseleave', function() {
+                if (dayEl._tooltip) {
+                    dayEl._tooltip.remove();
+                    dayEl._tooltip = null;
+                }
+            });
+        });
+        
+        console.log('Heatmap created successfully');
+    }
+    
+    function getContributionLevel(count) {
+        if (count === 0) return 0;
+        if (count <= 3) return 1;
+        if (count <= 8) return 2;
+        if (count <= 15) return 3;
+        return 4;
     }
     
     // ============================================
@@ -912,5 +1131,4 @@ window.addEventListener('load', function() {
     }
     
     console.log('Ready');
-    console.log('App.js loaded');
 });

@@ -1426,3 +1426,183 @@ body {
         justify-content: center;
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ============================================
+   CONTRIBUTION HEATMAP
+   ============================================ */
+   .heatmap-wrapper {
+    background: var(--bg-tertiary);
+    border-radius: 10px;
+    padding: 2rem;
+    overflow-x: auto;
+}
+
+.loading-spinner-small {
+    width: 32px;
+    height: 32px;
+    border: 3px solid var(--border);
+    border-top-color: var(--blue);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 2rem auto;
+}
+
+.loading-text {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+    font-weight: 400;
+    margin-left: auto;
+}
+
+.heatmap-grid {
+    display: inline-block;
+    position: relative;
+}
+
+.heatmap-months {
+    height: 20px;
+    position: relative;
+    margin-left: 50px;
+    margin-bottom: 8px;
+}
+
+.month-label {
+    position: absolute;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.heatmap-days {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    position: absolute;
+    left: 0;
+    top: 28px;
+}
+
+.day-label {
+    height: 11px;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    line-height: 11px;
+}
+
+.heatmap-weeks {
+    display: flex;
+    gap: 3px;
+    margin-left: 50px;
+}
+
+.heatmap-week {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.heatmap-day {
+    width: 11px;
+    height: 11px;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.heatmap-day:hover {
+    outline: 2px solid var(--text-muted);
+    outline-offset: 0px;
+}
+
+.heatmap-day.level-0 {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+}
+
+.heatmap-day.level-1 {
+    background: #0e4429;
+}
+
+.heatmap-day.level-2 {
+    background: #006d32;
+}
+
+.heatmap-day.level-3 {
+    background: #26a641;
+}
+
+.heatmap-day.level-4 {
+    background: #39d353;
+}
+
+.heatmap-tooltip {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 1000;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.heatmap-legend {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    justify-content: flex-end;
+}
+
+.legend-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.legend-squares {
+    display: flex;
+    gap: 3px;
+}
+
+.legend-square {
+    width: 11px;
+    height: 11px;
+    border-radius: 2px;
+}
+
+.legend-square.level-0 {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+}
+
+.legend-square.level-1 {
+    background: #0e4429;
+}
+
+.legend-square.level-2 {
+    background: #006d32;
+}
+
+.legend-square.level-3 {
+    background: #26a641;
+}
+
+.legend-square.level-4 {
+    background: #39d353;
+}
+
