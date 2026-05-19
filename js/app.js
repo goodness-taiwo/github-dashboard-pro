@@ -1,5 +1,5 @@
 // ============================================
-// GITHUB DASHBOARD PRO - COMPLETE WITH HEATMAP
+// GITHUB DASHBOARD PRO - COMPLETE WITH ACTIVITY
 // ============================================
 
 console.log('Script loaded');
@@ -87,6 +87,8 @@ window.addEventListener('load', function() {
                 showRepositories();
             } else if (href === '#insights') {
                 showInsights();
+            } else if (href === '#activity') {
+                showActivity();
             }
         });
     });
@@ -160,6 +162,12 @@ window.addEventListener('load', function() {
         displayInsights();
     };
     
+    window.showActivity = function() {
+        currentPage = 'activity';
+        updateNavActive();
+        displayActivity();
+    };
+    
     function updateNavActive() {
         navLinks.forEach(function(link) {
             link.classList.remove('active');
@@ -169,6 +177,8 @@ window.addEventListener('load', function() {
             } else if (href === '#repositories' && currentPage === 'repositories') {
                 link.classList.add('active');
             } else if (href === '#insights' && currentPage === 'insights') {
+                link.classList.add('active');
+            } else if (href === '#activity' && currentPage === 'activity') {
                 link.classList.add('active');
             }
         });
@@ -656,6 +666,272 @@ window.addEventListener('load', function() {
     }
     
     // ============================================
+    // DISPLAY ACTIVITY PAGE
+    // ============================================
+    
+    function displayActivity() {
+        console.log('Displaying activity page');
+        
+        resultsContainer.innerHTML = `
+            <div class="results-page">
+                <div class="results-content">
+                    <button onclick="backToHome()" class="back-button">
+                        <span class="material-symbols-outlined">arrow_back</span>
+                        <span>Back to Home</span>
+                    </button>
+                    
+                    <div class="page-header">
+                        <h1>
+                            <span class="material-symbols-outlined">timeline</span>
+                            Activity Timeline
+                        </h1>
+                        <p>Recent GitHub activity and contributions</p>
+                    </div>
+                    
+                    <div id="activityTimeline" class="activity-container">
+                        <div class="loading-spinner-small"></div>
+                        <p style="text-align: center; color: var(--text-muted); margin-top: 1rem;">Loading activity...</p>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        fetchUserActivity(currentUser.login).then(function(events) {
+            renderActivityTimeline(events);
+        }).catch(function(error) {
+            console.error('Error loading activity:', error);
+            const activityContainer = document.getElementById('activityTimeline');
+            if (activityContainer) {
+                activityContainer.innerHTML = '<p style="text-align: center; color: var(--text-muted); padding: 2rem;">Unable to load activity data</p>';
+            }
+        });
+        
+        console.log('Activity page displayed');
+    }
+    
+    // ============================================
+    // FETCH USER ACTIVITY
+    // ============================================
+    
+    async function fetchUserActivity(username) {
+        console.log('Fetching user activity...');
+        
+        try {
+            const response = await fetch(
+                `https://api.github.com/users/${username}/events/public?per_page=100`
+            );
+            
+            if (!response.ok) {
+                throw new Error('Failed to fetch activity');
+            }
+            
+            const events = await response.json();
+            console.log('Activity fetched:', events.length, 'events');
+            return events;
+        } catch (error) {
+            console.error('Error fetching activity:', error);
+            throw error;
+        }
+    }
+    
+    // ============================================
+    // RENDER ACTIVITY TIMELINE
+    // ============================================
+    
+    function renderActivityTimeline(events) {
+        const activityContainer = document.getElementById('activityTimeline');
+        
+        if (!activityContainer) {
+            console.error('Activity container not found');
+            return;
+        }
+        
+        if (events.length === 0) {
+            activityContainer.innerHTML = `
+                <div class="no-activity">
+                    <span class="material-symbols-outlined">history_toggle_off</span>
+                    <h3>No recent activity</h3>
+                    <p>This user hasn't had any public activity recently</p>
+                </div>
+            `;
+            return;
+        }
+        
+        // Group events by date
+        const groupedEvents = groupEventsByDate(events);
+        
+        let html = '';
+        
+        for (const dateLabel in groupedEvents) {
+            html += `<div class="activity-date-group">`;
+            html += `<h3 class="date-label">${dateLabel}</h3>`;
+            html += `<div class="activity-items">`;
+            
+            groupedEvents[dateLabel].forEach(function(event) {
+                const formatted = formatEvent(event);
+                if (formatted) {
+                    html += `
+                        <div class="activity-item">
+                            <div class="activity-icon-container">
+                                <span class="activity-icon ${formatted.color}">
+                                    <span class="material-symbols-outlined">${formatted.icon}</span>
+                                </span>
+                            </div>
+                            <div class="activity-details">
+                                <p class="activity-text">
+                                    ${formatted.text}
+                                    ${formatted.repo ? `<a href="https://github.com/${formatted.repo}" target="_blank" class="activity-repo">${formatted.repo}</a>` : ''}
+                                </p>
+                                ${formatted.extra ? `<p class="activity-extra">${formatted.extra}</p>` : ''}
+                                <span class="activity-time">${getTimeAgo(event.created_at)}</span>
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+            
+            html += `</div></div>`;
+        }
+        
+        activityContainer.innerHTML = html;
+        console.log('Activity timeline rendered');
+    }
+    
+    // ============================================
+    // GROUP EVENTS BY DATE
+    // ============================================
+    
+    function groupEventsByDate(events) {
+        const grouped = {};
+        
+        events.forEach(function(event) {
+            const date = new Date(event.created_at);
+            const dateLabel = getDateLabel(date);
+            
+            if (!grouped[dateLabel]) {
+                grouped[dateLabel] = [];
+            }
+            
+            grouped[dateLabel].push(event);
+        });
+        
+        return grouped;
+    }
+    
+    // ============================================
+    // GET DATE LABEL
+    // ============================================
+    
+    function getDateLabel(date) {
+        const now = new Date();
+        const diffMs = now - date;
+        const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+        
+        if (diffDays === 0) return 'Today';
+        if (diffDays === 1) return 'Yesterday';
+        if (diffDays < 7) return `${diffDays} days ago`;
+        if (diffDays < 14) return 'Last week';
+        if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`;
+        
+        return date.toLocaleDateString('en-US', { 
+            month: 'short', 
+            day: 'numeric', 
+            year: 'numeric' 
+        });
+    }
+    
+    // ============================================
+    // FORMAT EVENT
+    // ============================================
+    
+    function formatEvent(event) {
+        switch(event.type) {
+            case 'PushEvent':
+                const commitCount = event.payload.commits ? event.payload.commits.length : 0;
+                const commitWord = commitCount === 1 ? 'commit' : 'commits';
+                return {
+                    icon: 'upload',
+                    color: 'green',
+                    text: `Pushed ${commitCount} ${commitWord} to`,
+                    repo: event.repo.name
+                };
+            
+            case 'CreateEvent':
+                if (event.payload.ref_type === 'repository') {
+                    return {
+                        icon: 'add_box',
+                        color: 'blue',
+                        text: `Created repository`,
+                        repo: event.repo.name
+                    };
+                } else if (event.payload.ref_type === 'branch') {
+                    return {
+                        icon: 'call_split',
+                        color: 'purple',
+                        text: `Created branch ${event.payload.ref} in`,
+                        repo: event.repo.name
+                    };
+                }
+                break;
+            
+            case 'WatchEvent':
+                return {
+                    icon: 'star',
+                    color: 'yellow',
+                    text: `Starred`,
+                    repo: event.repo.name
+                };
+            
+            case 'ForkEvent':
+                return {
+                    icon: 'fork_right',
+                    color: 'cyan',
+                    text: `Forked`,
+                    repo: event.repo.name
+                };
+            
+            case 'IssuesEvent':
+                const issueAction = event.payload.action;
+                return {
+                    icon: issueAction === 'opened' ? 'error' : 'check_circle',
+                    color: issueAction === 'opened' ? 'orange' : 'green',
+                    text: `${issueAction.charAt(0).toUpperCase() + issueAction.slice(1)} issue in`,
+                    repo: event.repo.name,
+                    extra: event.payload.issue ? event.payload.issue.title : ''
+                };
+            
+            case 'PullRequestEvent':
+                const prAction = event.payload.action;
+                return {
+                    icon: prAction === 'opened' ? 'pull_request' : 'merge',
+                    color: prAction === 'opened' ? 'purple' : 'purple',
+                    text: `${prAction.charAt(0).toUpperCase() + prAction.slice(1)} pull request in`,
+                    repo: event.repo.name,
+                    extra: event.payload.pull_request ? event.payload.pull_request.title : ''
+                };
+            
+            case 'DeleteEvent':
+                return {
+                    icon: 'delete',
+                    color: 'red',
+                    text: `Deleted ${event.payload.ref_type} ${event.payload.ref} in`,
+                    repo: event.repo.name
+                };
+            
+            case 'PublicEvent':
+                return {
+                    icon: 'public',
+                    color: 'blue',
+                    text: `Made repository public`,
+                    repo: event.repo.name
+                };
+            
+            default:
+                return null;
+        }
+    }
+    
+    // ============================================
     // CREATE LANGUAGE BAR CHART
     // ============================================
     
@@ -761,13 +1037,11 @@ window.addEventListener('load', function() {
         const oneYearAgo = new Date();
         oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
         
-        // Initialize all dates in the past year with 0 commits
         for (let d = new Date(oneYearAgo); d <= new Date(); d.setDate(d.getDate() + 1)) {
             const dateKey = d.toISOString().split('T')[0];
             contributionsMap[dateKey] = 0;
         }
         
-        // Fetch commits from repos (limit 30 for speed)
         const commitPromises = allRepos.slice(0, 30).map(async function(repo) {
             try {
                 const response = await fetch(
@@ -787,7 +1061,6 @@ window.addEventListener('load', function() {
         const allCommitsArrays = await Promise.all(commitPromises);
         const allCommits = allCommitsArrays.flat();
         
-        // Count commits per day
         allCommits.forEach(function(commit) {
             if (commit.commit && commit.commit.author) {
                 const date = commit.commit.author.date.split('T')[0];
@@ -818,11 +1091,9 @@ window.addEventListener('load', function() {
         const oneYearAgo = new Date();
         oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
         
-        // Find the most recent Sunday
         const mostRecentSunday = new Date(today);
         mostRecentSunday.setDate(today.getDate() - today.getDay());
         
-        // Build calendar grid (52 weeks)
         const weeks = [];
         let currentDate = new Date(mostRecentSunday);
         currentDate.setDate(currentDate.getDate() - (51 * 7));
@@ -845,10 +1116,8 @@ window.addEventListener('load', function() {
             weeks.push(weekData);
         }
         
-        // Generate HTML
         let html = '<div class="heatmap-grid">';
         
-        // Month labels
         html += '<div class="heatmap-months">';
         const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
         let lastMonth = -1;
@@ -861,7 +1130,6 @@ window.addEventListener('load', function() {
         });
         html += '</div>';
         
-        // Day labels
         html += '<div class="heatmap-days">';
         html += '<span class="day-label">Mon</span>';
         html += '<span class="day-label"></span>';
@@ -872,7 +1140,6 @@ window.addEventListener('load', function() {
         html += '<span class="day-label"></span>';
         html += '</div>';
         
-        // Weeks and days
         html += '<div class="heatmap-weeks">';
         weeks.forEach(function(week) {
             html += '<div class="heatmap-week">';
@@ -897,7 +1164,6 @@ window.addEventListener('load', function() {
         
         html += '</div>';
         
-        // Legend
         html += `
             <div class="heatmap-legend">
                 <span class="legend-label">Less</span>
@@ -914,7 +1180,6 @@ window.addEventListener('load', function() {
         
         heatmapContainer.innerHTML = html;
         
-        // Add tooltips
         const days = heatmapContainer.querySelectorAll('.heatmap-day');
         days.forEach(function(dayEl) {
             dayEl.addEventListener('mouseenter', function() {
