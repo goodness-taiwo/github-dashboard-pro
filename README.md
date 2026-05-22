@@ -157,15 +157,31 @@ GitHub REST API rate limits:
 
 github-dashboard-pro/
 ├── css/
-│   └── main.css          (Complete styling, 1000+ lines)
+│   └── main.css          
 ├── js/
-│   └── app.js            (Complete functionality, 1200+ lines)
+│   └── app.js            
 ├── index.html            (Main HTML structure)
 ├── README.md
 ├── LICENSE
 └── .gitignore
 
 
+## Screenshots
+
+### Landing Page
+![Landing Page](images/landing.png)
+
+### Dashboard
+![Dashboard](images/dashboard.png)
+
+### Insights
+![Insights Page](images/insights.png)
+
+### Repositories
+![Repositories Page](images/repos.png)
+
+### Activity Timeline
+![Activity Page](images/activity.png)
 
 ## Key Functions
 
