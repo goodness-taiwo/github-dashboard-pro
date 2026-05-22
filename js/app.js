@@ -44,6 +44,33 @@ let currentSearch = '';
 
 window.addEventListener('load', function() {
     console.log('Page loaded');
+
+    // Mobile menu toggle
+const navbar = document.querySelector('.nav-content');
+const navLinksContainer = document.querySelector('.nav-links');
+
+// Create mobile menu button if it doesn't exist
+if (!document.querySelector('.mobile-menu-toggle')) {
+    const mobileToggle = document.createElement('button');
+    mobileToggle.className = 'mobile-menu-toggle';
+    mobileToggle.innerHTML = '<span class="material-symbols-outlined">menu</span>';
+    navbar.querySelector('.nav-right').prepend(mobileToggle);
+    
+    mobileToggle.addEventListener('click', function() {
+        navLinksContainer.classList.toggle('mobile-open');
+        const icon = mobileToggle.querySelector('.material-symbols-outlined');
+        icon.textContent = navLinksContainer.classList.contains('mobile-open') ? 'close' : 'menu';
+    });
+    
+    // Close menu when link is clicked
+    navLinks.forEach(function(link) {
+        link.addEventListener('click', function() {
+            navLinksContainer.classList.remove('mobile-open');
+            const icon = mobileToggle.querySelector('.material-symbols-outlined');
+            icon.textContent = 'menu';
+        });
+    });
+}
     
     const searchForm = document.getElementById('searchForm');
     const usernameInput = document.getElementById('usernameInput');
@@ -103,11 +130,25 @@ window.addEventListener('load', function() {
         showResultsPage();
         
         resultsContainer.innerHTML = `
-            <div class="loading-container">
-                <div class="loading-spinner"></div>
-                <p>Loading ${username}'s profile...</p>
+        <div class="loading-container">
+            <div class="loading-spinner"></div>
+            <p class="loading-text-animated">Loading ${username}'s profile...</p>
+            <div class="loading-steps">
+                <div class="loading-step">
+                    <span class="step-icon">📊</span>
+                    <span>Fetching profile data</span>
+                </div>
+                <div class="loading-step">
+                    <span class="step-icon">📁</span>
+                    <span>Loading repositories</span>
+                </div>
+                <div class="loading-step">
+                    <span class="step-icon">📈</span>
+                    <span>Calculating statistics</span>
+                </div>
             </div>
-        `;
+        </div>
+    `;
         
         fetch(`https://api.github.com/users/${username}`)
             .then(function(response) {
@@ -1397,3 +1438,12 @@ window.addEventListener('load', function() {
     
     console.log('Ready');
 });
+
+
+
+
+
+
+
+
+
