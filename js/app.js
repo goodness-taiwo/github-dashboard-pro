@@ -1,5 +1,5 @@
 // ============================================
-// GITHUB DASHBOARD PRO - COMPLETE WITH ACTIVITY
+// GITHUB DASHBOARD PRO - COMPLETE WITH POLISH
 // ============================================
 
 console.log('Script loaded');
@@ -44,33 +44,6 @@ let currentSearch = '';
 
 window.addEventListener('load', function() {
     console.log('Page loaded');
-
-    // Mobile menu toggle
-const navbar = document.querySelector('.nav-content');
-const navLinksContainer = document.querySelector('.nav-links');
-
-// Create mobile menu button if it doesn't exist
-if (!document.querySelector('.mobile-menu-toggle')) {
-    const mobileToggle = document.createElement('button');
-    mobileToggle.className = 'mobile-menu-toggle';
-    mobileToggle.innerHTML = '<span class="material-symbols-outlined">menu</span>';
-    navbar.querySelector('.nav-right').prepend(mobileToggle);
-    
-    mobileToggle.addEventListener('click', function() {
-        navLinksContainer.classList.toggle('mobile-open');
-        const icon = mobileToggle.querySelector('.material-symbols-outlined');
-        icon.textContent = navLinksContainer.classList.contains('mobile-open') ? 'close' : 'menu';
-    });
-    
-    // Close menu when link is clicked
-    navLinks.forEach(function(link) {
-        link.addEventListener('click', function() {
-            navLinksContainer.classList.remove('mobile-open');
-            const icon = mobileToggle.querySelector('.material-symbols-outlined');
-            icon.textContent = 'menu';
-        });
-    });
-}
     
     const searchForm = document.getElementById('searchForm');
     const usernameInput = document.getElementById('usernameInput');
@@ -81,6 +54,31 @@ if (!document.querySelector('.mobile-menu-toggle')) {
     const navLinks = document.querySelectorAll('.nav-link');
     
     console.log('All elements found');
+    
+    // Mobile menu toggle
+    const navbar = document.querySelector('.nav-content');
+    const navLinksContainer = document.querySelector('.nav-links');
+    
+    if (!document.querySelector('.mobile-menu-toggle')) {
+        const mobileToggle = document.createElement('button');
+        mobileToggle.className = 'mobile-menu-toggle';
+        mobileToggle.innerHTML = '<span class="material-symbols-outlined">menu</span>';
+        navbar.querySelector('.nav-right').prepend(mobileToggle);
+        
+        mobileToggle.addEventListener('click', function() {
+            navLinksContainer.classList.toggle('mobile-open');
+            const icon = mobileToggle.querySelector('.material-symbols-outlined');
+            icon.textContent = navLinksContainer.classList.contains('mobile-open') ? 'close' : 'menu';
+        });
+        
+        navLinks.forEach(function(link) {
+            link.addEventListener('click', function() {
+                navLinksContainer.classList.remove('mobile-open');
+                const icon = mobileToggle.querySelector('.material-symbols-outlined');
+                icon.textContent = 'menu';
+            });
+        });
+    }
     
     // Form submit
     if (searchForm) {
@@ -130,25 +128,25 @@ if (!document.querySelector('.mobile-menu-toggle')) {
         showResultsPage();
         
         resultsContainer.innerHTML = `
-        <div class="loading-container">
-            <div class="loading-spinner"></div>
-            <p class="loading-text-animated">Loading ${username}'s profile...</p>
-            <div class="loading-steps">
-                <div class="loading-step">
-                    <span class="step-icon">📊</span>
-                    <span>Fetching profile data</span>
-                </div>
-                <div class="loading-step">
-                    <span class="step-icon">📁</span>
-                    <span>Loading repositories</span>
-                </div>
-                <div class="loading-step">
-                    <span class="step-icon">📈</span>
-                    <span>Calculating statistics</span>
+            <div class="loading-container">
+                <div class="loading-spinner"></div>
+                <p class="loading-text-animated">Loading ${username}'s profile...</p>
+                <div class="loading-steps">
+                    <div class="loading-step">
+                        <span class="material-symbols-outlined step-icon">account_circle</span>
+                        <span>Fetching profile data</span>
+                    </div>
+                    <div class="loading-step">
+                        <span class="material-symbols-outlined step-icon">folder</span>
+                        <span>Loading repositories</span>
+                    </div>
+                    <div class="loading-step">
+                        <span class="material-symbols-outlined step-icon">analytics</span>
+                        <span>Calculating statistics</span>
+                    </div>
                 </div>
             </div>
-        </div>
-    `;
+        `;
         
         fetch(`https://api.github.com/users/${username}`)
             .then(function(response) {
@@ -688,12 +686,78 @@ if (!document.querySelector('.mobile-menu-toggle')) {
         setTimeout(function() {
             createLanguageBarChart(languages);
             
-            fetchContributionData(currentUser.login).then(function(contributionsMap) {
+            fetchContributionData(currentUser.login).then(function(data) {
                 const loadingText = document.getElementById('heatmapLoading');
                 if (loadingText) {
                     loadingText.remove();
                 }
-                createContributionHeatmap(contributionsMap);
+                createContributionHeatmap(data.contributionsMap);
+                
+                // NEW: Analyze productivity metrics
+                const metrics = analyzeProductivityMetrics(data.detailedCommits, data.contributionsMap);
+                
+                // Add productivity section HTML
+                const insightsContent = document.querySelector('.results-content');
+                const productivityHTML = `
+                    <div class="insight-section">
+                        <h2 class="section-title">
+                            <span class="material-symbols-outlined">speed</span>
+                            Productivity Metrics
+                        </h2>
+                        
+                        <div class="productivity-stats-grid">
+                            <div class="productivity-stat-card">
+                                <span class="material-symbols-outlined stat-icon-large blue">schedule</span>
+                                <div class="stat-info">
+                                    <div class="stat-value">${formatHour(metrics.peakHour)}</div>
+                                    <div class="stat-label">Peak Coding Hour</div>
+                                </div>
+                            </div>
+                            <div class="productivity-stat-card">
+                                <span class="material-symbols-outlined stat-icon-large purple">calendar_today</span>
+                                <div class="stat-info">
+                                    <div class="stat-value">${getDayName(metrics.peakDay)}</div>
+                                    <div class="stat-label">Most Productive Day</div>
+                                </div>
+                            </div>
+                            <div class="productivity-stat-card">
+                                <span class="material-symbols-outlined stat-icon-large orange">local_fire_department</span>
+                                <div class="stat-info">
+                                    <div class="stat-value">${metrics.longestStreak}</div>
+                                    <div class="stat-label">Longest Streak (Days)</div>
+                                </div>
+                            </div>
+                            <div class="productivity-stat-card">
+                                <span class="material-symbols-outlined stat-icon-large green">trending_up</span>
+                                <div class="stat-info">
+                                    <div class="stat-value">${metrics.averagePerActiveDay}</div>
+                                    <div class="stat-label">Avg Commits/Active Day</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="productivity-charts">
+                            <div class="productivity-chart-box">
+                                <h3 class="chart-title">Commits by Hour of Day</h3>
+                                <div class="productivity-chart-container">
+                                    <canvas id="productivityHourChart"></canvas>
+                                </div>
+                            </div>
+                            <div class="productivity-chart-box">
+                                <h3 class="chart-title">Commits by Day of Week</h3>
+                                <div class="productivity-chart-container">
+                                    <canvas id="productivityDayChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                insightsContent.insertAdjacentHTML('beforeend', productivityHTML);
+                
+                // Create the charts
+                createProductivityCharts(metrics);
+                
             }).catch(function(error) {
                 console.error('Error creating heatmap:', error);
                 const heatmapContainer = document.getElementById('contributionHeatmap');
@@ -798,7 +862,6 @@ if (!document.querySelector('.mobile-menu-toggle')) {
             return;
         }
         
-        // Group events by date
         const groupedEvents = groupEventsByDate(events);
         
         let html = '';
@@ -1075,6 +1138,7 @@ if (!document.querySelector('.mobile-menu-toggle')) {
         console.log('Fetching contribution data...');
         
         const contributionsMap = {};
+        const detailedCommits = []; // NEW: Store all commits with timestamps
         const oneYearAgo = new Date();
         oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
         
@@ -1104,16 +1168,296 @@ if (!document.querySelector('.mobile-menu-toggle')) {
         
         allCommits.forEach(function(commit) {
             if (commit.commit && commit.commit.author) {
-                const date = commit.commit.author.date.split('T')[0];
+                const fullDate = commit.commit.author.date;
+                const date = fullDate.split('T')[0];
+                
                 if (contributionsMap[date] !== undefined) {
                     contributionsMap[date]++;
                 }
+                
+                // NEW: Store detailed commit data
+                detailedCommits.push({
+                    date: new Date(fullDate),
+                    timestamp: fullDate,
+                    repo: commit.repository ? commit.repository.name : 'unknown'
+                });
             }
         });
         
         console.log('Contribution data fetched:', Object.keys(contributionsMap).length, 'days');
-        return contributionsMap;
+        console.log('Detailed commits:', detailedCommits.length);
+        
+        // Return BOTH the map and detailed commits
+        return {
+            contributionsMap: contributionsMap,
+            detailedCommits: detailedCommits
+        };
     }
+
+
+    // ============================================
+// ANALYZE PRODUCTIVITY METRICS
+// ============================================
+
+function analyzeProductivityMetrics(detailedCommits, contributionsMap) {
+    console.log('Analyzing productivity metrics...');
+    
+    // Initialize counters
+    const commitsByHour = {};
+    const commitsByDay = {};
+    
+    // Initialize all hours (0-23)
+    for (let h = 0; h < 24; h++) {
+        commitsByHour[h] = 0;
+    }
+    
+    // Initialize all days (0-6, Sunday-Saturday)
+    for (let d = 0; d < 7; d++) {
+        commitsByDay[d] = 0;
+    }
+    
+    // Analyze each commit
+    detailedCommits.forEach(function(commit) {
+        const hour = commit.date.getHours();
+        const dayOfWeek = commit.date.getDay();
+        
+        commitsByHour[hour]++;
+        commitsByDay[dayOfWeek]++;
+    });
+    
+    // Find peak hour
+    let peakHour = 0;
+    let maxHourCommits = 0;
+    for (let h = 0; h < 24; h++) {
+        if (commitsByHour[h] > maxHourCommits) {
+            maxHourCommits = commitsByHour[h];
+            peakHour = h;
+        }
+    }
+    
+    // Find peak day
+    let peakDay = 0;
+    let maxDayCommits = 0;
+    for (let d = 0; d < 7; d++) {
+        if (commitsByDay[d] > maxDayCommits) {
+            maxDayCommits = commitsByDay[d];
+            peakDay = d;
+        }
+    }
+    
+    // Calculate longest streak
+    const sortedDates = Object.keys(contributionsMap).sort();
+    let currentStreak = 0;
+    let longestStreak = 0;
+    
+    sortedDates.forEach(function(dateKey) {
+        if (contributionsMap[dateKey] > 0) {
+            currentStreak++;
+            if (currentStreak > longestStreak) {
+                longestStreak = currentStreak;
+            }
+        } else {
+            currentStreak = 0;
+        }
+    });
+    
+    // Calculate averages
+    const totalCommits = detailedCommits.length;
+    const totalDays = 365;
+    const activeDays = Object.values(contributionsMap).filter(function(count) {
+        return count > 0;
+    }).length;
+    
+    const averagePerDay = (totalCommits / totalDays).toFixed(2);
+    const averagePerActiveDay = activeDays > 0 ? (totalCommits / activeDays).toFixed(2) : 0;
+    
+    return {
+        byHour: commitsByHour,
+        byDay: commitsByDay,
+        peakHour: peakHour,
+        peakDay: peakDay,
+        longestStreak: longestStreak,
+        totalCommits: totalCommits,
+        averagePerDay: parseFloat(averagePerDay),
+        averagePerActiveDay: parseFloat(averagePerActiveDay),
+        activeDays: activeDays
+    };
+}
+
+// ============================================
+// CREATE PRODUCTIVITY CHARTS
+// ============================================
+
+function createProductivityCharts(metrics) {
+    console.log('Creating productivity charts');
+    
+    // Chart 1: Commits by Hour
+    const hourCanvas = document.getElementById('productivityHourChart');
+    if (hourCanvas) {
+        const hourLabels = [];
+        const hourData = [];
+        
+        for (let h = 0; h < 24; h++) {
+            // Format hours: 12 AM, 1 AM, 2 AM, ..., 11 PM
+            const period = h < 12 ? 'AM' : 'PM';
+            const hour12 = h === 0 ? 12 : h > 12 ? h - 12 : h;
+            hourLabels.push(hour12 + ' ' + period);
+            hourData.push(metrics.byHour[h]);
+        }
+        
+        new Chart(hourCanvas, {
+            type: 'bar',
+            data: {
+                labels: hourLabels,
+                datasets: [{
+                    label: 'Commits',
+                    data: hourData,
+                    backgroundColor: '#58a6ff',
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: '#161b22',
+                        titleColor: '#f0f6fc',
+                        bodyColor: '#8b949e',
+                        borderColor: '#30363d',
+                        borderWidth: 1,
+                        padding: 12,
+                        callbacks: {
+                            label: function(context) {
+                                return context.parsed.y + ' commits at ' + context.label;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            color: '#8b949e',
+                            font: {
+                                size: 10
+                            }
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: '#30363d'
+                        },
+                        ticks: {
+                            color: '#8b949e',
+                            precision: 0
+                        }
+                    }
+                }
+            }
+        });
+    }
+    
+    // Chart 2: Commits by Day of Week
+    const dayCanvas = document.getElementById('productivityDayChart');
+    if (dayCanvas) {
+        const dayLabels = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const dayData = [];
+        const dayColors = [];
+        
+        for (let d = 0; d < 7; d++) {
+            dayData.push(metrics.byDay[d]);
+            // Highlight peak day
+            dayColors.push(d === metrics.peakDay ? '#56d364' : '#58a6ff');
+        }
+        
+        new Chart(dayCanvas, {
+            type: 'bar',
+            data: {
+                labels: dayLabels,
+                datasets: [{
+                    label: 'Commits',
+                    data: dayData,
+                    backgroundColor: dayColors,
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: '#161b22',
+                        titleColor: '#f0f6fc',
+                        bodyColor: '#8b949e',
+                        borderColor: '#30363d',
+                        borderWidth: 1,
+                        padding: 12,
+                        callbacks: {
+                            label: function(context) {
+                                return context.parsed.y + ' commits on ' + context.label;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            color: '#8b949e',
+                            font: {
+                                size: 11
+                            }
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: '#30363d'
+                        },
+                        ticks: {
+                            color: '#8b949e',
+                            precision: 0
+                        }
+                    }
+                }
+            }
+        });
+    }
+    
+    console.log('Productivity charts created');
+}
+
+// ============================================
+// FORMAT HOUR (24 to 12-hour format)
+// ============================================
+
+function formatHour(hour) {
+    if (hour === 0) return '12 AM';
+    if (hour === 12) return '12 PM';
+    if (hour < 12) return hour + ' AM';
+    return (hour - 12) + ' PM';
+}
+
+// ============================================
+// GET DAY NAME
+// ============================================
+
+function getDayName(dayIndex) {
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    return days[dayIndex];
+}
     
     // ============================================
     // CREATE CONTRIBUTION HEATMAP
@@ -1438,12 +1782,3 @@ if (!document.querySelector('.mobile-menu-toggle')) {
     
     console.log('Ready');
 });
-
-
-
-
-
-
-
-
-
